@@ -3,10 +3,9 @@ const statusText = document.getElementById("status");
 
 let currentPlayer = "X";
 let gameActive = true;
+let gameState = ["", "", "", "", "", "", "", "", ""];
 
-let board = ["","","","","","","","",""];
-
-const winPatterns = [
+const winningConditions = [
     [0,1,2],
     [3,4,5],
     [6,7,8],
@@ -17,57 +16,68 @@ const winPatterns = [
     [2,4,6]
 ];
 
-cells.forEach(cell => {
-    cell.addEventListener("click", handleClick);
-});
+function handleCellClick(event) {
+    const cell = event.target;
+    const index = cell.getAttribute("data-index");
 
-function handleClick() {
-    const index = this.dataset.index;
-
-    if(board[index] !== "" || !gameActive){
+    if (gameState[index] !== "" || !gameActive) {
         return;
     }
 
-    board[index] = currentPlayer;
-    this.textContent = currentPlayer;
+    gameState[index] = currentPlayer;
+    cell.textContent = currentPlayer;
 
     checkWinner();
-
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-    
-    if(gameActive){
-        statusText.textContent = `Player ${currentPlayer} Turn`;
-    }
 }
 
-function checkWinner(){
-    for(let pattern of winPatterns){
+function checkWinner() {
+    let roundWon = false;
 
-        let a = board[pattern[0]];
-        let b = board[pattern[1]];
-        let c = board[pattern[2]];
+    for (let condition of winningConditions) {
+        const a = gameState[condition[0]];
+        const b = gameState[condition[1]];
+        const c = gameState[condition[2]];
 
-        if(a && a === b && b === c){
-            statusText.textContent = `Player ${a} Wins!`;
-            gameActive = false;
-            return;
+        if (a === "" || b === "" || c === "") {
+            continue;
+        }
+
+        if (a === b && b === c) {
+            roundWon = true;
+            break;
         }
     }
 
-    if(!board.includes("")){
-        statusText.textContent = "Match Draw!";
+    if (roundWon) {
+        statusText.textContent = currentPlayer + " Wins!";
         gameActive = false;
+        return;
     }
+
+    if (!gameState.includes("")) {
+        statusText.textContent = "Game Draw!";
+        gameActive = false;
+        return;
+    }
+
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    statusText.textContent = currentPlayer + "'s Turn";
 }
 
-function restartGame(){
-    board = ["","","","","","","","",""];
-    gameActive = true;
+function resetGame() {
     currentPlayer = "X";
+    gameActive = true;
+    gameState = ["", "", "", "", "", "", "", "", ""];
+
+    statusText.textContent = "X's Turn";
 
     cells.forEach(cell => {
         cell.textContent = "";
     });
-
-    statusText.textContent = "Player X Turn";
 }
+
+cells.forEach(cell => {
+    cell.addEventListener("click", handleCellClick);
+});
+
+statusText.textContent = "X's Turn";
