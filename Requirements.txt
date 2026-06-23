@@ -1,0 +1,10 @@
+## Requirements
+
+### Software Requirements
+- Web Browser (Google Chrome, Microsoft Edge, Firefox)
+- Code Editor (Visual Studio Code)
+
+### Technologies
+- HTML5
+- CSS3
+- JavaScript
